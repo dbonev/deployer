@@ -14,30 +14,52 @@ function delete_temp_files(files){
 		fs.unlink(files);
 	}
 }
-function create_temp_conf_file(config_entries){
+function create_temp_conf_file(filename, config_entries, separator){
 	if (config_entries == null){
-		exec('echo file:/home/db/temp/test:goes_into:/h.zip > __test_prep.conf');
-		exec('echo file:/home/db/temp/test1:goes_into:/h.zip >> __test_prep.conf');
+		exec('echo ==tmp=file==  > ' + filename);
+		if (separator != null){
+			exec('echo separator' + separator + ' >> ' + filename);
+		} else {
+			separator = ":";
+		}
+		exec('echo file' + separator + '/home/db/temp/test' + separator + 'goes_into' + separator + '/h.zip >> ' + filename);
+		exec('echo file' + separator + '/home/db/temp/test1' + separator + 'goes_into' + separator + '/h.zip >> ' + filename);
 	} else {
-		exec('touch __test_prep.conf');
+		exec('echo  >  ' + filename);
 		config_entries.forEach(function(entry){
-			output = 'echo file:' + entry.in_file + ':goes_into:' + entry.raw_out_file + ' >> __test_prep.conf';
+			output = 'echo file:' + entry.in_file + ':goes_into:' + entry.raw_out_file + ' >> ' + filename;
 			exec(output);
 		});
 	}
 }
 
-describe('Input file read line by line', function(){
-	create_temp_conf_file();
-	it('should have executed', function(done){
-		reader.read_config('__test_prep.conf', function(config_entries){
+describe('Ability to change separator', function(){
+	create_temp_conf_file('__sep.conf', null, ",");
+	it('shouild have processed the configuration', function(done){
+		reader.read_config('__sep.conf', function(config_entries){
 			assert.equal(2, config_entries.length);
 			var entry_1 = config_entries[0];
 			var entry_2 = config_entries[1];
 			assert.equal('/home/db/temp/test', entry_1.in_file);
 			assert.equal('/home/db/temp/test1', entry_2.in_file);
 			assert.equal('h.zip', entry_1.out_file);
-			delete_temp_files('__test_prep.conf');
+			delete_temp_files('__sep.conf');
+			done();
+		});
+	});
+});
+
+describe('Input file read line by line', function(){
+	create_temp_conf_file('__sep2.conf');
+	it('should have executed', function(done){
+		reader.read_config('__sep2.conf', function(config_entries){
+			assert.equal(2, config_entries.length);
+			var entry_1 = config_entries[0];
+			var entry_2 = config_entries[1];
+			assert.equal('/home/db/temp/test', entry_1.in_file);
+			assert.equal('/home/db/temp/test1', entry_2.in_file);
+			assert.equal('h.zip', entry_1.out_file);
+			delete_temp_files('__sep2.conf');
 			done();
 		});
 	});

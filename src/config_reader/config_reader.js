@@ -1,19 +1,30 @@
 module.exports  = {
-	read_config: _read_conf
+	read_config: _read_conf,
+	starts_with: starts_with,
+	ends_with: ends_with
 }
 
 var readline = require('readline');
 var fs = require('fs');
 var path = require('path');
+var separator;
 
 function _read_conf(filename, callback){
+	separator = ":";
 	input = fs.createReadStream(filename);
 	var result = [];
 	rl_interface = readline.createInterface({
 		input: input
 	});
 	rl_interface.on('line', function(line){
-		var info = new ConfigInfo(line);
+		if(line == null || line.length == 0){
+			return;
+		}
+		if (starts_with(line, "separator")){
+			separator = line.slice(-1);
+			return;
+		}
+		var info = create_config_info(line);
 		if (info != null){
 			result.push(info);
 		}
@@ -39,7 +50,7 @@ function DeployConfigInfo(parsed_array){
 	this.type = 'deploy';
 }
 
-function ConfigInfo(raw_line){
+function create_config_info(raw_line){
 	parsed_array = split(raw_line);
 	if (parsed_array.length == 4
 		&& parsed_array[0] === 'file'
@@ -54,6 +65,17 @@ function ConfigInfo(raw_line){
 	}
 }
 
+function starts_with(source, pattern){
+	var re = new RegExp("^" + pattern);
+	return re.test(source);
+}
+
+function ends_with(source, pattern){
+	var re = new RegExp(pattern + "$");
+	return re.test(source);
+}
+
+
 function split(string){
-	return string.split(":");
+	return string.split(separator);
 }

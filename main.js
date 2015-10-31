@@ -1,4 +1,5 @@
 var logger = require('./src/logger/logger');
+var reader = require('./src/config_reader/config_reader'); 
 
 var argv = process.argv;
 
@@ -7,17 +8,11 @@ if (argv.length <= 2){
 	return;	
 }
 
-var reader = require('./src/config_reader/config_reader'); 
 var processor = require('./src/processor/processor'); 
-
-function ends_with(source, token){
-	var re = new RegExp(token + "$");
-	return re.test(source);
-}
 
 var command = argv[2];
 var filename = command;
-if (!ends_with(command, '.conf')){
+if (!reader.ends_with(command, '.conf')){
 	filename = command + '.conf';
 } 
 
