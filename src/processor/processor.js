@@ -43,7 +43,6 @@ function process_files(input_files_for_this_output, out_file){
 function group_by_output(config_entries){
 	var result = {};
 	config_entries.forEach(function(entry){
-		console.log("Found entry with output file " + entry.raw_out_file);
 		if (result[entry.raw_out_file] == null){
 			result[entry.raw_out_file] = [];
 		}

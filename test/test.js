@@ -5,6 +5,15 @@ var processor = require('../src/processor/processor');
 var shell = require('shelljs/global');
 var fs = require('fs');
 
+function delete_temp_files(files){
+	if (typeof files.forEach === 'function'){
+		files.forEach(function(file){
+			fs.unlink(file);
+		});
+	} else if (files != null && typeof files === 'string'){
+		fs.unlink(files);
+	}
+}
 function create_temp_conf_file(config_entries){
 	if (config_entries == null){
 		exec('echo file:/home/db/temp/test:goes_into:/h.zip > __test_prep.conf');
@@ -28,20 +37,23 @@ describe('Input file read line by line', function(){
 			assert.equal('/home/db/temp/test', entry_1.in_file);
 			assert.equal('/home/db/temp/test1', entry_2.in_file);
 			assert.equal('h.zip', entry_1.out_file);
+			delete_temp_files('__test_prep.conf');
 			done();
 		});
 	});
 });
 
-describe('Zpiiing the input into a single file', function(){
-	exec('echo test > /tmp/tst.txt');
-	exec('echo test > /tmp/tst1.txt');
-	exec('echo test > /tmp/tst2.txt');
-	var files = ["/tmp/tst.txt", "/tmp/tst1.txt", "/tmp/tst2.txt"];
-	var zipfile =  "/tmp/tstzip.zip";
+describe('Zipping the input into a single file', function(){
+	exec('echo test > __tst.txt');
+	exec('echo test > __tst1.txt');
+	exec('echo test > __tst2.txt');
+	var files = ["__tst.txt", "__tst1.txt", "__tst2.txt"];
+	var zipfile =  "__tstzip.zip";
 	it("zip should exist", function(done){
 		zipper.zippit(files, zipfile, function(){
 			assert.equal(exists(zipfile), true);
+			delete_temp_files(files);
+			delete_temp_files(zipfile);
 			done();
 		});
 	});
