@@ -12,6 +12,7 @@ function zippit (input_files, zip_file, callback){
 	var archive = archiver.create('zip', {});
 	var output = fs.createWriteStream(zip_file);
 	output.on('close', function(){
+		logger.log('File ' + zip_file + ' processed successfully');
 		if (callback != null){
 			callback();
 		}
