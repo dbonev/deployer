@@ -11,7 +11,7 @@ var separator;
 
 function _read_conf(filename, callback){
 	separator = ":";
-	input = fs.createReadStream(filename);
+	var input = fs.createReadStream(filename);
 	var result = [];
 	rl_interface = readline.createInterface({
 		input: input

@@ -106,7 +106,8 @@ describe('Grouping config entries by output', function(){
 	it('should be possible to loop over properties', function(){
 		var i = 0;
 		for (var key in grouped){
-			if (grouped[key] != null){
+			console.log(key);
+			if (key === "/home/o1" || key === "/home/o2"){
 				i++;
 			}
 		}

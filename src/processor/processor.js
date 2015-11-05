@@ -41,12 +41,12 @@ function process_files(input_files_for_this_output, out_file){
 }
 
 function group_by_output(config_entries){
-	var result = {};
-	config_entries.forEach(function(entry){
-		if (result[entry.raw_out_file] == null){
-			result[entry.raw_out_file] = [];
-		}
-		result[entry.raw_out_file].push(entry);
-	});
-	return result;
+	linq.linqify(config_entries);
+	var res ={};
+	config_entries
+		.group_by(function(entry) { return entry.raw_out_file; })
+		.forEach(function(g){
+			res[g.key] = g.val;
+		})
+	return res;
 }
